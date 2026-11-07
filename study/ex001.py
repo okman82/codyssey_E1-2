@@ -137,30 +137,156 @@
 # 5를 입력하면 프로그램을 종료합니다.를 출력하고 끝납니다.
 
 
-menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
+# menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
 
-for i in range(len(menu)):
-    print(f"{i+1}. {menu[i]}")
+# for i in range(len(menu)):
+#     print(f"{i+1}. {menu[i]}")
 
-input_num = input("번호를 입력하세요: ")    
-input_num = int(input_num)
+# input_num = input("번호를 입력하세요: ")    
+# input_num = int(input_num)
 
-while input_num != 5:
-    if input_num == 1:
-        print("퀴즈 풀기를 선택했습니다.")
-    elif input_num == 2:
-        print("퀴즈 추가를 선택했습니다.")
-    elif input_num == 3:
-        print("퀴즈 목록을 선택했습니다.")
-    elif input_num == 4:
-        print("점수 확인을 선택했습니다.")
-    else:
-        print("잘못된 번호입니다.")
+# while input_num != 5:
+#     if input_num == 1:
+#         print("퀴즈 풀기를 선택했습니다.")
+#     elif input_num == 2:
+#         print("퀴즈 추가를 선택했습니다.")
+#     elif input_num == 3:
+#         print("퀴즈 목록을 선택했습니다.")
+#     elif input_num == 4:
+#         print("점수 확인을 선택했습니다.")
+#     else:
+#         print("잘못된 번호입니다.")
 
-    for i in range(len(menu)):
-        print(f"{i+1}. {menu[i]}")
+#     for i in range(len(menu)):
+#         print(f"{i+1}. {menu[i]}")
 
-    input_num = input("번호를 입력하세요: ")    
-    input_num = int(input_num)
+#     input_num = input("번호를 입력하세요: ")    
+#     input_num = int(input_num)
 
-print("프로그램을 종료합니다.")    
+# print("프로그램을 종료합니다.")    
+
+
+# 빠진 부분 하나
+# 5를 입력하면 반복은 끝나지만 프로그램을 종료합니다.가 출력되지 않습니다. 반복문이 끝난 뒤, 들여쓰기 없이 맨 아래에 print를 추가하세요.
+
+# 더 좋게 만들 부분: 중복 코드
+# 메뉴 출력과 입력 코드가 반복문 위와 안쪽에 두 번 있습니다. 나중에 메뉴 문구나 입력 방식을 바꿀 때 두 곳을 모두 고쳐야 하고, 한 곳을 빠뜨리면 버그가 생깁니다.
+
+# 앞에서 배운 while True와 break를 쓰면 한 번만 쓸 수 있습니다. 구조는 이렇습니다.
+
+# python
+# while True:
+#     # 1. 메뉴 출력
+#     # 2. 번호 입력
+#     # 3. 5면 종료 문구 출력 후 break
+#     # 4. 1~4면 선택한 기능 출력
+#     # 5. 나머지는 잘못된 번호 안내
+# 직접 해 보기
+
+# 위 구조대로 코드를 고쳐 보세요. 메뉴 출력과 입력 코드가 한 번씩만 나오면 성공입니다.
+
+# 도전 과제(선택): 1~4번의 if/elif 4개를 줄일 수도 있습니다. 메뉴 이름이 이미 menu 리스트에 있으니, 입력한 번호로 리스트에서 이름을 꺼내 f-string에 넣으면 됩니다. 번호와 인덱스의 차이에 주의하세요.
+
+
+
+
+
+# menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
+
+
+# while True:
+
+#     for i in range(len(menu)):
+#         print(f"{i+1}. {menu[i]}")
+
+#     input_num = input("번호를 입력하세요: ")    
+#     input_num = int(input_num)
+
+
+#     if input_num == 1:
+#         print("퀴즈 풀기를 선택했습니다.")
+#     elif input_num == 2:
+#         print("퀴즈 추가를 선택했습니다.")
+#     elif input_num == 3:
+#         print("퀴즈 목록을 선택했습니다.")
+#     elif input_num == 4:
+#         print("점수 확인을 선택했습니다.")
+#     elif input_num == 5:
+#         print("프로그램을 종료합니다.")
+#         break         
+#     else:
+#         print("잘못된 번호입니다.")
+
+
+# 오류 처리 try/except
+
+# try:
+#     num = int(input("숫자를 입력하세요: "))
+#     print(f"입력한 숫자는 {num}입니다.")    
+# except ValueError:
+#     print("올바른 숫자를 입력하세요.")
+
+
+# text = "     1      "
+# print(text.strip())  # 1
+
+
+# 직접 해 보기
+
+# 위 메뉴 코드의 입력 부분을 고쳐서 아래 입력을 모두 처리해 보세요.
+
+# 입력	결과
+# 1 (앞뒤 공백)	퀴즈 풀기를 선택했습니다.
+# abc	숫자만 입력하세요. 출력 후 메뉴로
+# 그냥 Enter	입력이 비어 있습니다. 출력 후 메뉴로
+# 9	잘못된 번호입니다. 출력 후 메뉴로
+
+
+# menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
+
+
+# while True:
+
+#     for i in range(len(menu)):
+#         print(f"{i+1}. {menu[i]}")
+
+#     try:
+#         input_num = input("번호를 입력하세요: ").strip()
+#         if input_num == "":
+#             print("입력이 비어 있습니다.")
+#             continue
+
+#         input_num = int(input_num)
+#     except ValueError:
+#         print("숫자만 입력하세요.")
+#         continue
+
+#     if input_num == 1:
+#         print("퀴즈 풀기를 선택했습니다.")
+#     elif input_num == 2:
+#         print("퀴즈 추가를 선택했습니다.")
+#     elif input_num == 3:
+#         print("퀴즈 목록을 선택했습니다.")
+#     elif input_num == 4:
+#         print("점수 확인을 선택했습니다.")
+#     elif input_num == 5:
+#         print("프로그램을 종료합니다.")
+#         break         
+#     else:
+#         print("잘못된 번호입니다.")
+
+# 함수
+
+# def greet(name):
+#     message = f"안녕하세요, {name}님!"
+#     return message
+
+# result = greet("홍길동")
+# print(result)  # 안녕하세요, 홍길동님!
+
+
+def is_in_range(num, low, high):
+    return low <= num <= high
+
+print(is_in_range(3,1,4))
+print(is_in_range(9,1,5))   
