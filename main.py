@@ -1,4 +1,7 @@
 import json
+from pathlib import Path
+
+STATE_FILE = Path(__file__).parent / "state.json"
 
 def input_number(prompt, low, high):
     while True:
@@ -74,13 +77,10 @@ class Quiz:
         )
 
 class QuizGame:
-    def __init__(self, default_quizzes, state_file="state.json"):
-        self.default_quizzes = [
-            Quiz(q.question, list(q.choices), q.answer) for q in default_quizzes
-        ]
-        self.quizzes = [
-            Quiz(q.question, list(q.choices), q.answer) for q in default_quizzes
-        ]
+    def __init__(self, default_quizzes, state_file=STATE_FILE):
+        self.default_quizzes = self.copy_quizzes(default_quizzes)
+        self.quizzes = self.copy_quizzes(default_quizzes)
+        
         self.best_score = None
         self.menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
         self.running = True
