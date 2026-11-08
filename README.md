@@ -210,7 +210,6 @@ history = data.get("history", [])
 ├── study/
 │   └── ex001.py         # 미션 전 Python 연습 코드
 └── docs/
-    ├── CODE_REVIEW.md   # 주요 코드 리뷰와 설계 이유
     └── screenshots/     # 실행 화면 캡처
 ```
 
@@ -224,8 +223,6 @@ history = data.get("history", [])
 | 클래스 | `QuizGame` | `run()` 메뉴 반복, `show_menu()` 메뉴 출력, `play_quiz()`, `add_quiz()`, `show_quizzes()`, `show_best_score()`, ⭐ `delete_quiz()`, `save_state()`, `load_state()`, `copy_quizzes()` 기본 퀴즈 복사 |
 
 ## 7. 주요 코드 설명
-
-> 각 코드를 왜 이렇게 썼는지, 일반적인 방식과 비교한 자세한 설명은 [코드 리뷰 문서](docs/CODE_REVIEW.md)에 정리했습니다.
 
 ### 7-1. 프로그램 실행 흐름
 
