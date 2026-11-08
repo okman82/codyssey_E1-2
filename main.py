@@ -24,6 +24,23 @@ def input_number(prompt, low, high):
 
         print(f"{low}에서 {high} 사이의 숫자를 입력하세요.")
 
+def input_text(prompt):
+    while True:
+        try:
+            value = input(prompt).strip()
+        except KeyboardInterrupt:
+            print("\n입력이 중단되었습니다. 프로그램을 안전하게 종료합니다.")
+            return None
+        except EOFError:
+            print("\n입력 스트림이 종료되었습니다. 프로그램을 안전하게 종료합니다.")
+            return None
+
+        if value == "":
+            print("입력이 비어 있습니다.")
+            continue
+
+        return value
+
 
 menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
 
