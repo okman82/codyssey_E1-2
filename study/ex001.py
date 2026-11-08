@@ -285,8 +285,77 @@
 # print(result)  # 안녕하세요, 홍길동님!
 
 
-def is_in_range(num, low, high):
-    return low <= num <= high
+# def is_in_range(num, low, high):
+#     return low <= num <= high
 
-print(is_in_range(3,1,4))
-print(is_in_range(9,1,5))   
+# print(is_in_range(3,1,4))
+# print(is_in_range(9,1,5))   
+
+
+# 직접 해 보기
+
+# 숫자를 입력받는 함수 input_number(prompt, low, high)를 만들어 보세요.
+
+# prompt: 화면에 보여줄 안내 문구
+# low, high: 허용 범위
+# 빈 입력, 숫자가 아닌 값, 범위 밖 숫자면 안내 후 함수 안에서 다시 입력받습니다.
+# 올바른 숫자를 입력하면 그 숫자를 return합니다.
+
+# 완성하면 메뉴 코드는 이렇게 짧아집니다.
+
+# python
+# choice = input_number("번호를 입력하세요: ", 1, 5)
+
+# 힌트: 함수 안에 while True를 두고, 지금 작성한 입력 처리 코드를 옮기세요. 
+# 올바른 숫자일 때 break 대신 return을 쓰면 반복과 함수가 함께 끝납니다.
+
+# def input_number(prompt, low, high):
+#     while True:
+#         try:
+#             input_num = input(prompt).strip()
+#             if input_num == "":
+#                 print("입력이 비어 있습니다.")
+#                 continue
+
+#             input_num = int(input_num)
+#         except ValueError:
+#             print("숫자만 입력하세요.")
+#             continue
+
+#         if low <= input_num <= high:
+#             return input_num
+#         else:
+#             print(f"{low}에서 {high} 사이의 숫자를 입력하세요.")
+
+# choice = input_number("번호를 입력하세요: ", 1, 5)
+
+# print(f"입력한 번호는 {choice}입니다.")
+
+# 클래스와 객체
+
+# class dog:
+#     def __init__(self, name, age):
+#         self.name = name
+#         self.age = age
+
+#     def bark(self):
+#         print(f"{self.name}가 짖습니다. 멍멍!")
+
+# dog1 = dog("바둑이", 3)
+# dog2 = dog("초코", 5)
+
+# dog1.bark()  # 바둑이가 짖습니다. 멍멍!
+# print(dog2.age)  # 5
+
+# class Dog:
+#     def __init__(self, name, age):
+#         self.name = name
+#         self.age = age
+
+# dog1 = Dog("초코", 3)
+# dog2 = Dog("콩이", 5)
+
+# print(dog1.name)
+# print(dog2.age)
+# dog1.age = dog1.age + 1
+# print(dog1.age)
