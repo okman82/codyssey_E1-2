@@ -59,6 +59,26 @@
                 "7"
             ],
             "answer": 3
+        },
+        {
+            "question": "11111",
+            "choices": [
+                "1",
+                "2",
+                "3",
+                "4"
+            ],
+            "answer": 1
+        },
+        {
+            "question": "print(2 + 5) 결과는?",
+            "choices": [
+                "1",
+                "3",
+                "5",
+                "7"
+            ],
+            "answer": 4
         }
     ],
     "best_score": 66
