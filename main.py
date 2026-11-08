@@ -208,10 +208,18 @@ class QuizGame:
         percent = score * 100 // len(self.quizzes)
         print(f"\n결과: {len(self.quizzes)}문제 중 {score}문제 정답! ({percent}점)")
 
+        self.history.append({
+            "played_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "total": len(self.quizzes),
+            "correct": score,
+            "score": percent
+        })
+
         if self.best_score is None or percent > self.best_score:
             self.best_score = percent
-            self.save_state()
             print("새로운 최고 점수입니다!")
+
+        self.save_state()
 
     def add_quiz(self):
         print("\n새 퀴즈를 추가합니다.")
