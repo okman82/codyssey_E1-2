@@ -1,4 +1,6 @@
 import json
+import os
+import shutil
 from pathlib import Path
 from datetime import datetime
 
@@ -96,9 +98,11 @@ class QuizGame:
                 "history": self.history
             }
 
+            temp_file = Path(self.state_file).with_suffix(".json.tmp")
             try:
-                with open(self.state_file, "w", encoding="utf-8") as file:
+                with open(temp_file, "w", encoding="utf-8") as file:
                     json.dump(data, file, ensure_ascii=False, indent=4)
+                os.replace(temp_file, self.state_file)
             except OSError:
                 print("파일 저장 중 오류가 발생했습니다.")
 
@@ -166,10 +170,19 @@ class QuizGame:
 
         except (json.JSONDecodeError, ValueError, OSError):
             print("state.json 파일이 손상되었거나 읽을 수 없어 기본 퀴즈로 복구합니다.")
+            self.backup_broken_file()
             self.quizzes = self.copy_quizzes(self.default_quizzes)
             self.best_score = None
             self.history = []
             self.save_state()
+
+    def backup_broken_file(self):
+        backup_file = Path(self.state_file).with_suffix(".json.bak")
+        try:
+            shutil.copyfile(self.state_file, backup_file)
+            print(f"손상된 파일은 {backup_file.name}에 백업했습니다.")
+        except OSError:
+            print("손상된 파일을 백업하지 못했습니다.")
 
     def copy_quizzes(self, quizzes):
         return [
