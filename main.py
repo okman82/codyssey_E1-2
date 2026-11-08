@@ -65,14 +65,84 @@ class Quiz:
 
     @classmethod
     def from_dict(cls, data):
-        return cls(data["question"], data["choices"], data["answer"])
+        return cls(
+            data["question"],
+            data["choices"],
+            data["answer"]
+        )
 
 class QuizGame:
-    def __init__(self, quizzes):
-        self.quizzes = quizzes
+    def __init__(self, default_quizzes, state_file="state.json"):
+        self.default_quizzes = [
+            Quiz(q.question, list(q.choices), q.answer) for q in default_quizzes
+        ]
+        self.quizzes = [
+            Quiz(q.question, list(q.choices), q.answer) for q in default_quizzes
+        ]
         self.best_score = None
         self.menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
         self.running = True
+        self.state_file = state_file
+        self.load_state()
+
+    def save_state(self):
+            data = {
+                "quizzes": [quiz.to_dict() for quiz in self.quizzes],
+                "best_score": self.best_score
+            }
+
+            try:
+                with open(self.state_file, "w", encoding="utf-8") as file:
+                    json.dump(data, file, ensure_ascii=False, indent=4)
+            except OSError:
+                print("파일 저장 중 오류가 발생했습니다.")
+
+    def load_state(self):
+        try:
+            with open(self.state_file, "r", encoding="utf-8") as file:
+                data = json.load(file)
+
+            quizzes_data = data.get("quizzes")
+            best_score = data.get("best_score")
+
+            if not isinstance(quizzes_data, list):
+                raise ValueError("quizzes 형식 오류")
+
+            loaded_quizzes = []
+            for item in quizzes_data:
+                if not isinstance(item, dict):
+                    raise ValueError("퀴즈 데이터 형식 오류")
+
+                question = item.get("question")
+                choices = item.get("choices")
+                answer = item.get("answer")
+
+                if not isinstance(question, str):
+                    raise ValueError("question 형식 오류")
+                if not isinstance(choices, list) or len(choices) != 4:
+                    raise ValueError("choices 형식 오류")
+                if not isinstance(answer, int) or not (1 <= answer <= 4):
+                    raise ValueError("answer 형식 오류")
+
+                loaded_quizzes.append(Quiz.from_dict(item))
+
+            if best_score is not None and not isinstance(best_score, int):
+                raise ValueError("best_score 형식 오류")
+
+            self.quizzes = loaded_quizzes
+            self.best_score = best_score
+
+        except FileNotFoundError:
+            print("state.json 파일이 없어 기본 퀴즈로 시작합니다.")
+            self.quizzes = self.copy_quizzes(self.default_quizzes)
+            self.best_score = None
+            self.save_state()
+
+        except (json.JSONDecodeError, ValueError, OSError):
+            print("state.json 파일이 손상되었거나 읽을 수 없어 기본 퀴즈로 복구합니다.")
+            self.quizzes = self.copy_quizzes(self.default_quizzes)
+            self.best_score = None
+            self.save_state()
 
     def show_menu(self):
         print()
