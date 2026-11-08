@@ -82,7 +82,7 @@ class QuizGame:
         self.quizzes = self.copy_quizzes(default_quizzes)
         
         self.best_score = None
-        self.menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
+        self.menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "퀴즈 삭제", "종료"]
         self.running = True
         self.state_file = state_file
         self.load_state()
@@ -251,6 +251,8 @@ class QuizGame:
                 elif choice == 4:
                     self.show_best_score()
                 elif choice == 5:
+                    self.delete_quiz()
+                elif choice == 6:
                     print("프로그램을 종료합니다.")
                     self.running = False
         finally:
