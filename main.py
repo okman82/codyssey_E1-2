@@ -261,6 +261,14 @@ class QuizGame:
         else:
             print(f"현재 최고 점수: {self.best_score}점")
 
+        if len(self.history) == 0:
+            return
+
+        print(f"\n[게임 기록] 총 {len(self.history)}회")
+        for i, record in enumerate(self.history, start=1):
+            print(f"{i}. {record['played_at']} | "
+                  f"{record['total']}문제 중 {record['correct']}개 정답 | "
+                  f"{record['score']}점")
 
     def delete_quiz(self):
         if len(self.quizzes) == 0:
