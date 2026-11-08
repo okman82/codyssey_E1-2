@@ -119,7 +119,7 @@ python main.py
 
 ### 메뉴
 ![메뉴](docs/screenshots/menu.png)
-
+       doc/screenshots/menu.png
 ### 퀴즈 풀기
 ![퀴즈 풀기](docs/screenshots/play.png)
 
