@@ -134,6 +134,10 @@ class QuizGame:
             self.quizzes = loaded_quizzes
             self.best_score = best_score
 
+            score_text = "없음" if best_score is None else f"{best_score}점"
+            print(f"저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개, 최고 점수 {score_text})")
+
+
         except FileNotFoundError:
             print("state.json 파일이 없어 기본 퀴즈로 시작합니다.")
             self.quizzes = self.copy_quizzes(self.default_quizzes)
@@ -226,7 +230,7 @@ class QuizGame:
         if self.best_score is None:
             print("아직 퀴즈를 풀지 않았습니다.")
         else:
-            print(f"현재 최고 점수: {self.best_score} 점")
+            print(f"현재 최고 점수: {self.best_score}점")
 
     def run(self):
         try:
