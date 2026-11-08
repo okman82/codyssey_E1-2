@@ -1,5 +1,6 @@
 import json
 from pathlib import Path
+from datetime import datetime
 
 STATE_FILE = Path(__file__).parent / "state.json"
 
@@ -82,6 +83,7 @@ class QuizGame:
         self.quizzes = self.copy_quizzes(default_quizzes)
         
         self.best_score = None
+        self.history = []
         self.menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "퀴즈 삭제", "종료"]
         self.running = True
         self.state_file = state_file
@@ -90,7 +92,8 @@ class QuizGame:
     def save_state(self):
             data = {
                 "quizzes": [quiz.to_dict() for quiz in self.quizzes],
-                "best_score": self.best_score
+                "best_score": self.best_score,
+                "history": self.history
             }
 
             try:
@@ -131,8 +134,24 @@ class QuizGame:
             if best_score is not None and not isinstance(best_score, int):
                 raise ValueError("best_score 형식 오류")
 
+            history = data.get("history", [])
+            if not isinstance(history, list):
+                raise ValueError("history 형식 오류")
+            for record in history:
+                if not isinstance(record, dict):
+                    raise ValueError("기록 형식 오류")
+                if not isinstance(record.get("played_at"), str):
+                    raise ValueError("played_at 형식 오류")
+                if not isinstance(record.get("total"), int):
+                    raise ValueError("total 형식 오류")
+                if not isinstance(record.get("correct"), int):
+                    raise ValueError("correct 형식 오류")
+                if not isinstance(record.get("score"), int):
+                    raise ValueError("score 형식 오류")
+
             self.quizzes = loaded_quizzes
             self.best_score = best_score
+            self.history = history
 
             score_text = "없음" if best_score is None else f"{best_score}점"
             print(f"저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개, 최고 점수 {score_text})")
@@ -142,12 +161,14 @@ class QuizGame:
             print("state.json 파일이 없어 기본 퀴즈로 시작합니다.")
             self.quizzes = self.copy_quizzes(self.default_quizzes)
             self.best_score = None
+            self.history = []
             self.save_state()
 
         except (json.JSONDecodeError, ValueError, OSError):
             print("state.json 파일이 손상되었거나 읽을 수 없어 기본 퀴즈로 복구합니다.")
             self.quizzes = self.copy_quizzes(self.default_quizzes)
             self.best_score = None
+            self.history = []
             self.save_state()
 
     def copy_quizzes(self, quizzes):
@@ -187,10 +208,18 @@ class QuizGame:
         percent = score * 100 // len(self.quizzes)
         print(f"\n결과: {len(self.quizzes)}문제 중 {score}문제 정답! ({percent}점)")
 
+        self.history.append({
+            "played_at": datetime.now().strftime("%Y-%m-%d %H:%M:%S"),
+            "total": len(self.quizzes),
+            "correct": score,
+            "score": percent
+        })
+
         if self.best_score is None or percent > self.best_score:
             self.best_score = percent
-            self.save_state()
             print("새로운 최고 점수입니다!")
+
+        self.save_state()
 
     def add_quiz(self):
         print("\n새 퀴즈를 추가합니다.")
@@ -232,6 +261,14 @@ class QuizGame:
         else:
             print(f"현재 최고 점수: {self.best_score}점")
 
+        if len(self.history) == 0:
+            return
+
+        print(f"\n[게임 기록] 총 {len(self.history)}회")
+        for i, record in enumerate(self.history, start=1):
+            print(f"{i}. {record['played_at']} | "
+                  f"{record['total']}문제 중 {record['correct']}개 정답 | "
+                  f"{record['score']}점")
 
     def delete_quiz(self):
         if len(self.quizzes) == 0:
