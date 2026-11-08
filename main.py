@@ -174,6 +174,7 @@ class QuizGame:
 
         if self.best_score is None or score > self.best_score:
             self.best_score = score
+            self.save_state()
             print("최고 점수가 갱신되었습니다!")
 
     def add_quiz(self):
@@ -217,25 +218,28 @@ class QuizGame:
             print(f"현재 최고 점수: {self.best_score}")
 
     def run(self):
-        while self.running:
-            self.show_menu()
-            choice = input_number("번호를 입력하세요: ", 1, len(self.menu))
+        try:
+            while self.running:
+                self.show_menu()
+                choice = input_number("번호를 입력하세요: ", 1, len(self.menu))
 
-            if choice is None:
-                self.running = False
-                break
+                if choice is None:
+                    self.running = False
+                    break
 
-            if choice == 1:
-                self.play_quiz()
-            elif choice == 2:
-                self.add_quiz()
-            elif choice == 3:
-                self.show_quizzes()
-            elif choice == 4:
-                self.show_best_score()
-            elif choice == 5:
-                print("프로그램을 종료합니다.")
-                self.running = False
+                if choice == 1:
+                    self.play_quiz()
+                elif choice == 2:
+                    self.add_quiz()
+                elif choice == 3:
+                    self.show_quizzes()
+                elif choice == 4:
+                    self.show_best_score()
+                elif choice == 5:
+                    print("프로그램을 종료합니다.")
+                    self.running = False
+        finally:
+            self.save_state()
 
                 
 # menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
