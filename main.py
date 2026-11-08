@@ -1,3 +1,5 @@
+import json
+
 def input_number(prompt, low, high):
     while True:
         try:
@@ -143,6 +145,12 @@ class QuizGame:
             self.quizzes = self.copy_quizzes(self.default_quizzes)
             self.best_score = None
             self.save_state()
+
+    def copy_quizzes(self, quizzes):
+        return [
+            Quiz(q.question, list(q.choices), q.answer)
+            for q in quizzes
+        ]
 
     def show_menu(self):
         print()
