@@ -28,7 +28,7 @@ def input_text(prompt):
     while True:
         try:
             value = input(prompt).strip()
-        except KeyboardInterrupt:
+        except KeyboardInterrupt:   
             print("\n입력이 중단되었습니다. 프로그램을 안전하게 종료합니다.")
             return None
         except EOFError:
@@ -42,7 +42,24 @@ def input_text(prompt):
         return value
 
 
+class Quiz:
+    def __init__(self, question, choices, answer):
+        self.question = question
+        self.choices = choices
+        self.answer = answer  # 1~4 번호로 저장
+
+    def show(self):
+        print(f"\n문제: {self.question}")
+        for i, choice in enumerate(self.choices, start=1):
+            print(f"{i}. {choice}")
+
+    def is_correct(self, user_answer):
+        return user_answer == self.answer
+
 menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
+
+
+# 공백 제거, 빈 입력 처리, 숫자 변환 실패 처리, 범위 밖 입력 처리, KeyboardInterrupt, EOFError 안전 종료
 
 while True:
     print()
