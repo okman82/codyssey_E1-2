@@ -500,7 +500,7 @@ $ git remote -v
 $ git log --oneline --graph
 ```
 
-![git log](docs/screenshots/git_log.png)
+![git log](docs/screenshots/git_log2.png)
 
 ### 10-4. clone / pull 실습
 
