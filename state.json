@@ -49,17 +49,7 @@
                 "import"
             ],
             "answer": 1
-        },
-        {
-            "question": "pint( 2 + 3 ) 실행시 결과값은",
-            "choices": [
-                "1",
-                "3",
-                "4",
-                "5"
-            ],
-            "answer": 4
         }
     ],
-    "best_score": 100
+    "best_score": null
 }
