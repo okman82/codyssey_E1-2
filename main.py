@@ -197,8 +197,8 @@ class QuizGame:
             self.running = False
             return
 
-        new_quiz = Quiz(question, choices, answer)
-        self.quizzes.append(new_quiz)
+        self.quizzes.append(Quiz(question, choices, answer))
+        self.save_state()
         print("퀴즈가 추가되었습니다.")
 
     def show_quizzes(self):
