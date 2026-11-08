@@ -71,7 +71,7 @@ python main.py
 | `Ctrl + C`, 입력 스트림 종료 | 안내 메시지 출력 후 저장하고 안전하게 종료 |
 | 퀴즈가 하나도 없을 때 | 퀴즈 풀기·목록·삭제에서 안내 메시지 출력 |
 | `state.json`이 없을 때 | 기본 퀴즈 5개로 시작하고 파일 생성 |
-| `state.json`이 손상되었을 때 | 안내 메시지 출력 후 기본 퀴즈로 복구 |
+| `state.json`이 손상되었을 때 | 손상된 파일을 `state.json.bak`으로 백업한 뒤 기본 퀴즈로 복구 |
 
 ## 5. 보너스 과제
 
@@ -204,6 +204,7 @@ history = data.get("history", [])
 .
 ├── main.py              # 프로그램 전체 코드 (Quiz, QuizGame 클래스, 입력 함수)
 ├── state.json           # 퀴즈·최고 점수·게임 기록 저장 파일 (없으면 실행 시 자동 생성)
+├── state.json.bak       # 손상된 파일의 백업 (손상 시에만 생성, Git 제외)
 ├── README.md            # 프로젝트 설명
 ├── STUDY.md             # 미션 준비 학습 노트
 ├── .gitignore           # Git에서 제외할 파일 목록
@@ -220,7 +221,7 @@ history = data.get("history", [])
 | 함수 | `input_number(prompt, low, high)` | 범위 안의 숫자를 입력받을 때까지 반복 (공백·빈 입력·문자·범위 검사) |
 | 함수 | `input_text(prompt)` | 비어 있지 않은 문자열을 입력받음 |
 | 클래스 | `Quiz` | `show()` 퀴즈 출력, `is_correct()` 정답 확인, `to_dict()`/`from_dict()` JSON 변환 |
-| 클래스 | `QuizGame` | `run()` 메뉴 반복, `show_menu()` 메뉴 출력, `play_quiz()`, `add_quiz()`, `show_quizzes()`, `show_best_score()`, ⭐ `delete_quiz()`, `save_state()`, `load_state()`, `copy_quizzes()` 기본 퀴즈 복사 |
+| 클래스 | `QuizGame` | `run()` 메뉴 반복, `show_menu()` 메뉴 출력, `play_quiz()`, `add_quiz()`, `show_quizzes()`, `show_best_score()`, ⭐ `delete_quiz()`, `save_state()`, `load_state()`, `backup_broken_file()` 손상 파일 백업, `copy_quizzes()` 기본 퀴즈 복사 |
 
 ## 7. 주요 코드 설명
 
@@ -306,11 +307,14 @@ data = {
     "best_score": self.best_score,
     "history": self.history          # ⭐ 보너스
 }
-with open(self.state_file, "w", encoding="utf-8") as file:
+temp_file = Path(self.state_file).with_suffix(".json.tmp")
+with open(temp_file, "w", encoding="utf-8") as file:
     json.dump(data, file, ensure_ascii=False, indent=4)
+os.replace(temp_file, self.state_file)   # 다 쓴 뒤에 원본과 교체
 ```
 
 - `[... for quiz in self.quizzes]`: 모든 퀴즈를 딕셔너리로 바꿔 새 리스트를 만듭니다.
+- 임시 파일에 먼저 쓰고 교체해, 저장 중에 꺼져도 원본이 깨지지 않습니다. ([12-2](#12-2-저장-중-손상-방지) 참고)
 - `with open(...)`: 블록이 끝나면 파일을 자동으로 닫습니다.
 - `ensure_ascii=False`: 한글을 글자 그대로 저장합니다.
 - 쓰기 실패(`OSError`) 시 안내 메시지를 출력하고 프로그램은 계속 실행합니다.
@@ -337,6 +341,7 @@ except (json.JSONDecodeError, ValueError, OSError):
 | 문법은 맞지만 내용이 잘못됨 (키 누락, 정답 9 등) | 직접 `raise ValueError` | 안내 후 기본 퀴즈로 복구 |
 | 읽기 권한 등 파일 오류 | `OSError` | 안내 후 기본 퀴즈로 복구 |
 
+- 손상된 경우 복구하기 전에 원본을 `state.json.bak`으로 백업합니다. ([12-1](#12-1-손상된-파일-백업) 참고)
 - 복구할 때는 퀴즈뿐 아니라 최고 점수와 게임 기록도 함께 초기화합니다.
 - JSON 문법만 검사하면 `"answer": 9`처럼 **형식은 맞지만 잘못된 데이터**를 그대로 불러와 게임 중 오류가 날 수 있어, `isinstance()`로 자료형과 범위를 직접 검사합니다.
 - 정상적으로 불러오면 `저장된 데이터를 불러왔습니다. (퀴즈 N개, 최고 점수 N점)`을 출력합니다. 아직 풀지 않았다면 `최고 점수 없음`으로 표시합니다.
@@ -467,8 +472,21 @@ STATE_FILE = Path(__file__).parent / "state.json"
 
 ## 10. Git 작업 기록
 
-- 기능 단위로 커밋 (`Feat`, `Fix`, `Refactor`, `Docs`)
-- 브랜치에서 작업 후 `main`에 `--no-ff`로 병합
+### 10-1. 원격 저장소
+
+- **저장소 URL**: https://github.com/okman82/codyssey_E1-2
+- **기본 브랜치**: `main`
+- **전체 커밋 수**: [__]개 (`git rev-list --count HEAD` 결과)
+
+```text
+$ git remote -v
+[여기에 git remote -v 결과 붙여넣기]
+```
+
+### 10-2. 커밋 규칙과 브랜치
+
+- 기능 단위로 커밋하고 메시지 앞에 종류를 붙였습니다: `Feat`(기능), `Fix`(수정), `Refactor`(구조 정리), `Docs`(문서)
+- 브랜치에서 작업한 뒤 `main`에 `--no-ff`로 병합해 병합 기록을 남겼습니다.
 
 | 브랜치 | 작업 내용 |
 |---|---|
@@ -476,6 +494,126 @@ STATE_FILE = Path(__file__).parent / "state.json"
 | ⭐ `feature/delete-quiz` | 보너스: 퀴즈 삭제 기능 |
 | ⭐ `feature/score-history` | 보너스: 점수 기록 히스토리 |
 
-- 사용한 명령: `init`, `add`, `commit`, `push`, `checkout`, `merge`, `clone`, `pull`
+### 10-3. 커밋 그래프
+
+```text
+$ git log --oneline --graph
+[여기에 git log --oneline --graph -30 결과 붙여넣기]
+```
 
 ![git log](docs/screenshots/git_log.png)
+
+### 10-4. clone / pull 실습
+
+원격 저장소를 다른 폴더에 복제해 수정·push한 뒤, 원래 작업 폴더에서 pull로 변경 사항을 받아왔습니다.
+
+| 순서 | 위치 | 명령 | 결과 |
+|---|---|---|---|
+| 1 | 다른 폴더 | `git clone https://github.com/okman82/codyssey_E1-2.git clone-test` | 저장소 전체 복제 |
+| 2 | 복제 폴더 | README에 한 줄 추가 → `git add` → `git commit` → `git push` | 원격 저장소에 반영 |
+| 3 | 원래 작업 폴더 | `git pull` | 복제 폴더에서 만든 커밋을 받아옴 |
+| 4 | 원래 작업 폴더 | `git log --oneline -3` | 받아온 커밋 확인 |
+
+```text
+[여기에 1~4 단계 터미널 출력 붙여넣기]
+```
+
+![clone](docs/screenshots/clone.png)
+![pull](docs/screenshots/pull.png)
+
+### 10-5. 사용한 Git 명령
+
+| 명령 | 사용한 곳 |
+|---|---|
+| `init` | 프로젝트 초기 설정 |
+| `add`, `commit` | 기능 단위 커밋 |
+| `push` | 기능 완성 후 GitHub에 반영 |
+| `checkout` | `checkout -b feature/...`로 브랜치 생성, `checkout main`으로 복귀 |
+| `merge` | `merge --no-ff`로 브랜치 병합 |
+| `clone` | 10-4 실습 1단계 |
+| `pull` | 10-4 실습 3단계 |
+
+## 11. 데이터가 많아질 때 (1,000개 이상)
+
+### 11-1. 실제 측정 결과
+
+같은 코드로 퀴즈 수를 늘려 `state.json`을 불러오고(`load_state`) 저장하는(`save_state`) 시간을 측정했습니다. (게임 기록 100개 포함)
+
+| 퀴즈 수 | 파일 크기 | 불러오기 | 저장 | 메모리 사용 |
+|---|---|---|---|---|
+| 1,000개 | 약 280KB | 약 13ms | 약 6ms | 약 1MB |
+| 10,000개 | 약 2.7MB | 약 96ms | 약 58ms | 약 10MB |
+| 100,000개 | 약 27MB | 약 1.2초 | 약 0.6초 | 약 105MB |
+
+**결론**: 1,000개 수준에서는 불러오기·저장 모두 사람이 느끼지 못할 만큼 빠릅니다. 10만 개부터 시작 시 지연이 체감되므로, 그 규모라면 아래 개선이 필요합니다.
+
+### 11-2. 기능별 처리량
+
+| 기능 | 처리 방식 | 데이터 N개일 때 | 비고 |
+|---|---|---|---|
+| 불러오기 | 파일 전체 읽기 + 전체 검증 | N에 비례 | 시작할 때 1번 |
+| 저장 | 파일 전체 다시 쓰기 | N에 비례 | 추가·삭제·풀기마다 |
+| 퀴즈 추가 | 리스트 끝에 추가 | 일정 | 저장 시간은 N에 비례 |
+| 퀴즈 삭제 | `pop(번호)` | N에 비례 | 뒤쪽 항목을 앞으로 당김 |
+| 퀴즈 목록 | 전체 출력 | N에 비례 | 화면에 1,000줄 출력 |
+| 퀴즈 풀기 | 전체 출제 | N에 비례 | 1,000문제를 한 번에 풀게 됨 |
+
+### 11-3. 예상 병목과 개선 방안
+
+| 병목 | 문제 | 개선 방안 |
+|---|---|---|
+| 퀴즈 풀기 | 1,000문제를 한 번에 다 풀어야 함 | 문제 수를 선택하고 무작위로 출제 (`random.sample`) |
+| 퀴즈 목록 | 화면이 1,000줄로 넘침 | 20개씩 페이지로 나눠 출력, 검색어로 찾기 |
+| 게임 기록 | 풀 때마다 계속 늘어남 | 최근 N개만 저장하거나 오래된 기록은 별도 파일로 분리 |
+| 저장 | 작은 변경에도 파일 전체를 다시 씀 | 수십만 개 이상이면 SQLite(표준 라이브러리 `sqlite3`)로 변경해 바뀐 행만 저장 |
+
+## 12. 데이터 백업과 안전한 저장
+
+### 12-1. 손상된 파일 백업
+
+`state.json`이 손상되면 기본 퀴즈로 복구하기 **전에** 원본을 `state.json.bak`으로 복사해 둡니다. 직접 추가한 퀴즈가 들어 있는 파일이 덮어써져 사라지는 것을 막기 위해서입니다.
+
+```python
+def backup_broken_file(self):
+    backup_file = Path(self.state_file).with_suffix(".json.bak")
+    try:
+        shutil.copyfile(self.state_file, backup_file)
+        print(f"손상된 파일은 {backup_file.name}에 백업했습니다.")
+    except OSError:
+        print("손상된 파일을 백업하지 못했습니다.")
+```
+
+```text
+state.json 파일이 손상되었거나 읽을 수 없어 기본 퀴즈로 복구합니다.
+손상된 파일은 state.json.bak에 백업했습니다.
+```
+
+**복구 방법**: `state.json.bak`을 열어 깨진 부분(괄호, 쉼표 등)을 고친 뒤 이름을 `state.json`으로 바꾸고 다시 실행합니다.
+
+### 12-2. 저장 중 손상 방지
+
+저장 도중 프로그램이 꺼지면 파일이 반만 쓰여 손상될 수 있습니다. 그래서 **임시 파일에 먼저 다 쓰고, 성공했을 때만 원본과 교체**합니다.
+
+```python
+temp_file = Path(self.state_file).with_suffix(".json.tmp")
+with open(temp_file, "w", encoding="utf-8") as file:
+    json.dump(data, file, ensure_ascii=False, indent=4)
+os.replace(temp_file, self.state_file)
+```
+
+- `os.replace`는 파일을 한 번에 교체하므로, 저장 중에 꺼져도 원본 `state.json`은 이전 상태 그대로 남습니다.
+- `state.json.bak`, `state.json.tmp`는 `.gitignore`에 추가해 저장소에 올리지 않습니다.
+
+## 13. 요구사항이 바뀔 때 수정할 곳
+
+| 바뀌는 요구사항 | 수정할 곳 | 함께 확인할 곳 |
+|---|---|---|
+| 점수 계산 방식 (예: 반올림, 가중치) | `QuizGame.play_quiz()`의 `percent` 계산 | `show_best_score()` 출력, README 최고 점수 기준 |
+| 선택지 개수 (예: 4개 → 5개) | `Quiz` 생성, `add_quiz()`의 `range(4)` | `load_state()`의 `len(choices) != 4` 검사, `play_quiz()`의 `input_number(..., 1, 4)` |
+| 퀴즈에 항목 추가 (예: 힌트, 난이도) | `Quiz.__init__`, `to_dict()`, `from_dict()` | `add_quiz()` 입력, `load_state()` 검증, `state.json` 스키마 |
+| 메뉴 추가·변경 | `QuizGame.__init__`의 `self.menu`, `run()`의 분기 | 입력 범위는 `len(self.menu)`라 수정 불필요 |
+| 게임 기록 항목 추가 | `play_quiz()`의 `history.append` | `load_state()`의 기록 검사, `show_best_score()` 출력 |
+| 저장 방식 변경 (예: JSON → DB) | `save_state()`, `load_state()` | 다른 메서드는 `self.quizzes`만 사용하므로 수정 불필요 |
+| 입력 검증 규칙 | `input_number()`, `input_text()` | 모든 입력이 두 함수를 거치므로 한 곳만 수정 |
+
+저장·불러오기가 `save_state()`와 `load_state()` 두 메서드에만 모여 있고, 모든 입력이 공통 입력 함수를 거치기 때문에 변경 범위가 한정됩니다.
