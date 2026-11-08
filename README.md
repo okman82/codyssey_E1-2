@@ -84,7 +84,8 @@ python main.py
 | 클래스 | `QuizGame` | `run()` 메뉴 반복, `play_quiz()`, `add_quiz()`, `show_quizzes()`, `show_best_score()`, `save_state()`, `load_state()` |
 
 ## 6. 주요 코드 설명
-** 상세코드 리뷰 (CODE_REVIEW.md)
+> 각 코드를 왜 이렇게 썼는지, 일반적인 방식과 비교한 자세한 설명은 [코드 리뷰 문서](CODE_REVIEW.md)에 정리했습니다.
+
 ### 6-1. 프로그램 실행 흐름
 
 ```text
