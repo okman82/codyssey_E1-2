@@ -51,5 +51,6 @@
             "answer": 1
         }
     ],
-    "best_score": null
+    "best_score": null,
+    "history": []
 }

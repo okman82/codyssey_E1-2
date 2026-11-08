@@ -476,11 +476,11 @@ STATE_FILE = Path(__file__).parent / "state.json"
 
 - **저장소 URL**: https://github.com/okman82/codyssey_E1-2
 - **기본 브랜치**: `main`
-- **전체 커밋 수**: [__]개 (`git rev-list --count HEAD` 결과)
+- **전체 커밋 수**: [51]개 (`git rev-list --count HEAD` 결과)
 
 ```text
 $ git remote -v
-[여기에 git remote -v 결과 붙여넣기]
+![git log](docs/screenshots/git_log.png)
 ```
 
 ### 10-2. 커밋 규칙과 브랜치
@@ -498,7 +498,6 @@ $ git remote -v
 
 ```text
 $ git log --oneline --graph
-[여기에 git log --oneline --graph -30 결과 붙여넣기]
 ```
 
 ![git log](docs/screenshots/git_log.png)
@@ -514,9 +513,6 @@ $ git log --oneline --graph
 | 3 | 원래 작업 폴더 | `git pull` | 복제 폴더에서 만든 커밋을 받아옴 |
 | 4 | 원래 작업 폴더 | `git log --oneline -3` | 받아온 커밋 확인 |
 
-```text
-[여기에 1~4 단계 터미널 출력 붙여넣기]
-```
 
 ![clone](docs/screenshots/clone.png)
 ![pull](docs/screenshots/pull.png)
