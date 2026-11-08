@@ -54,7 +54,7 @@ class Quiz:
         self.answer = answer  # 1~4 번호로 저장
 
     def show(self):
-        print(f"\n문제: {self.question}")
+        print(self.question)
         for i, choice in enumerate(self.choices, start=1):
             print(f"{i}. {choice}")
 
@@ -134,6 +134,10 @@ class QuizGame:
             self.quizzes = loaded_quizzes
             self.best_score = best_score
 
+            score_text = "없음" if best_score is None else f"{best_score}점"
+            print(f"저장된 데이터를 불러왔습니다. (퀴즈 {len(self.quizzes)}개, 최고 점수 {score_text})")
+
+
         except FileNotFoundError:
             print("state.json 파일이 없어 기본 퀴즈로 시작합니다.")
             self.quizzes = self.copy_quizzes(self.default_quizzes)
@@ -163,8 +167,10 @@ class QuizGame:
             return
 
         score = 0
+        print(f"\n퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
 
-        for quiz in self.quizzes:
+        for i, quiz in enumerate(self.quizzes, start=1):
+            print(f"\n[문제 {i}]")
             quiz.show()
             answer = input_number("정답 번호를 입력하세요: ", 1, 4)
 
@@ -178,12 +184,13 @@ class QuizGame:
             else:
                 print(f"오답입니다. 정답은 {quiz.answer}번입니다.")
 
-        print(f"\n퀴즈 종료! 점수: {score}/{len(self.quizzes)}")
+        percent = score * 100 // len(self.quizzes)
+        print(f"\n결과: {len(self.quizzes)}문제 중 {score}문제 정답! ({percent}점)")
 
-        if self.best_score is None or score > self.best_score:
-            self.best_score = score
+        if self.best_score is None or percent > self.best_score:
+            self.best_score = percent
             self.save_state()
-            print("최고 점수가 갱신되었습니다!")
+            print("새로운 최고 점수입니다!")
 
     def add_quiz(self):
         print("\n새 퀴즈를 추가합니다.")
@@ -223,7 +230,7 @@ class QuizGame:
         if self.best_score is None:
             print("아직 퀴즈를 풀지 않았습니다.")
         else:
-            print(f"현재 최고 점수: {self.best_score}")
+            print(f"현재 최고 점수: {self.best_score}점")
 
     def run(self):
         try:
