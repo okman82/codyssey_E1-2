@@ -17,8 +17,7 @@
 
 **주제: Python 기초 문법**
 
-<!-- ✏️ 직접 작성하세요. 아래는 예시입니다. -->
-Python을 처음 배우면서 헷갈렸던 문법(리스트 기호, 함수 정의, 반복문 등)을 퀴즈로 만들면 프로그램을 만드는 동시에 복습도 할 수 있다고 생각해 선정했습니다.
+파이썬을 퀴즈주제로 만든이유는 이번주 파이썬 관련 시험이 예정되어 있어, 계속 눈에 익히면 도움이 될꺼 같아 파이썬 기초문법으로 선정했습니다.
 
 ## 3. 실행 방법
 
@@ -76,15 +75,12 @@ python main.py
 
 ## 5. 보너스 과제
 
-미션의 선택 과제 5개 중 2개를 구현했습니다.
+미션의 선택 과제 중 아래 2가지를 구현했습니다.
 
-| 보너스 과제 | 상태 | 브랜치 |
+| 보너스 과제 | 메뉴 | 브랜치 |
 |---|---|---|
-| 랜덤 출제 | 미구현 | |
-| 문제 수 선택 | 미구현 | |
-| 힌트 기능 | 미구현 | |
-| **퀴즈 삭제 기능** | ✅ 구현 | `feature/delete-quiz` |
-| **점수 기록 히스토리** | ✅ 구현 | `feature/score-history` |
+| 퀴즈 삭제 기능 | 5. 퀴즈 삭제 | `feature/delete-quiz` |
+| 점수 기록 히스토리 | 4. 점수 확인 | `feature/score-history` |
 
 두 기능 모두 별도 브랜치에서 작업한 뒤 `main`에 `--no-ff`로 병합했습니다.
 
@@ -207,10 +203,14 @@ history = data.get("history", [])
 ```text
 .
 ├── main.py              # 프로그램 전체 코드 (Quiz, QuizGame 클래스, 입력 함수)
-├── state.json           # 퀴즈·최고 점수·게임 기록 저장 파일 (실행 시 자동 생성)
+├── state.json           # 퀴즈·최고 점수·게임 기록 저장 파일 (없으면 실행 시 자동 생성)
 ├── README.md            # 프로젝트 설명
+├── STUDY.md             # 미션 준비 학습 노트
 ├── .gitignore           # Git에서 제외할 파일 목록
+├── study/
+│   └── ex001.py         # 미션 전 Python 연습 코드
 └── docs/
+    ├── CODE_REVIEW.md   # 주요 코드 리뷰와 설계 이유
     └── screenshots/     # 실행 화면 캡처
 ```
 
@@ -221,10 +221,11 @@ history = data.get("history", [])
 | 함수 | `input_number(prompt, low, high)` | 범위 안의 숫자를 입력받을 때까지 반복 (공백·빈 입력·문자·범위 검사) |
 | 함수 | `input_text(prompt)` | 비어 있지 않은 문자열을 입력받음 |
 | 클래스 | `Quiz` | `show()` 퀴즈 출력, `is_correct()` 정답 확인, `to_dict()`/`from_dict()` JSON 변환 |
-| 클래스 | `QuizGame` | `run()` 메뉴 반복, `play_quiz()`, `add_quiz()`, `show_quizzes()`, `show_best_score()`, `save_state()`, `load_state()`, ⭐ `delete_quiz()` |
+| 클래스 | `QuizGame` | `run()` 메뉴 반복, `show_menu()` 메뉴 출력, `play_quiz()`, `add_quiz()`, `show_quizzes()`, `show_best_score()`, ⭐ `delete_quiz()`, `save_state()`, `load_state()`, `copy_quizzes()` 기본 퀴즈 복사 |
 
 ## 7. 주요 코드 설명
-<!-- > 각 코드를 왜 이렇게 썼는지, 일반적인 방식과 비교한 자세한 설명은 [코드 리뷰 문서](CODE_REVIEW.md)에 정리했습니다. -->
+
+> 각 코드를 왜 이렇게 썼는지, 일반적인 방식과 비교한 자세한 설명은 [코드 리뷰 문서](docs/CODE_REVIEW.md)에 정리했습니다.
 
 ### 7-1. 프로그램 실행 흐름
 
@@ -339,8 +340,9 @@ except (json.JSONDecodeError, ValueError, OSError):
 | 문법은 맞지만 내용이 잘못됨 (키 누락, 정답 9 등) | 직접 `raise ValueError` | 안내 후 기본 퀴즈로 복구 |
 | 읽기 권한 등 파일 오류 | `OSError` | 안내 후 기본 퀴즈로 복구 |
 
+- 복구할 때는 퀴즈뿐 아니라 최고 점수와 게임 기록도 함께 초기화합니다.
 - JSON 문법만 검사하면 `"answer": 9`처럼 **형식은 맞지만 잘못된 데이터**를 그대로 불러와 게임 중 오류가 날 수 있어, `isinstance()`로 자료형과 범위를 직접 검사합니다.
-- 정상적으로 불러오면 `저장된 데이터를 불러왔습니다. (퀴즈 N개, 최고 점수 N점)`을 출력합니다.
+- 정상적으로 불러오면 `저장된 데이터를 불러왔습니다. (퀴즈 N개, 최고 점수 N점)`을 출력합니다. 아직 풀지 않았다면 `최고 점수 없음`으로 표시합니다.
 
 ### 7-6. 기본 퀴즈 복사 `copy_quizzes`
 
@@ -404,7 +406,7 @@ STATE_FILE = Path(__file__).parent / "state.json"
 - **경로**: 프로젝트 루트 (`main.py`와 같은 폴더)
 - **역할**: 프로그램을 종료해도 퀴즈 목록, 최고 점수, 게임 기록이 유지되도록 저장
 - **인코딩**: UTF-8 (한글이 그대로 보이도록 `ensure_ascii=False`로 저장)
-- **저장 시점**: 퀴즈 추가 시, ⭐ 퀴즈 삭제 시, 퀴즈를 풀 때마다, 프로그램 종료 시
+- **저장 시점**: 퀴즈 추가 시, ⭐ 퀴즈 삭제 시, 퀴즈를 풀 때마다, 프로그램 종료 시, 파일이 없거나 손상되어 기본 퀴즈로 시작할 때
 
 ### 스키마
 
@@ -436,7 +438,7 @@ STATE_FILE = Path(__file__).parent / "state.json"
 | `quizzes[].choices` | list (str 4개) | 선택지 |
 | `quizzes[].answer` | int (1~4) | 정답 번호 |
 | `best_score` | int 또는 null | 최고 점수 (100점 만점). 아직 풀지 않았으면 `null` |
-| ⭐ `history` | list | 게임 기록 목록. 없으면 빈 목록으로 시작 |
+| ⭐ `history` | list | 게임 기록 목록 (오래된 기록부터). 키가 없으면 빈 목록으로 시작 |
 | ⭐ `history[].played_at` | str | 게임 날짜/시간 (`YYYY-MM-DD HH:MM:SS`) |
 | ⭐ `history[].total` | int | 푼 문제 수 |
 | ⭐ `history[].correct` | int | 맞힌 문제 수 |
