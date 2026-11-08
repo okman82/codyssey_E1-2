@@ -84,7 +84,7 @@ python main.py
 | 클래스 | `QuizGame` | `run()` 메뉴 반복, `play_quiz()`, `add_quiz()`, `show_quizzes()`, `show_best_score()`, `save_state()`, `load_state()` |
 
 ## 6. 주요 코드 설명
-
+** 상세코드 리뷰 (CODE_REVIEW.md)
 ### 6-1. 프로그램 실행 흐름
 
 ```text
@@ -293,6 +293,10 @@ STATE_FILE = Path(__file__).parent / "state.json"
 
 ### 퀴즈 추가
 ![퀴즈 추가](docs/screenshots/add_quiz.png)
+
+### 퀴즈 추가가 재시작시 퀴즈 추가여부 확인
+![퀴즈 추가후 재시작시 퀴즈 목록](docs/screenshots/add_quiz_restart.png)
+
 
 ### 퀴즈 목록
 ![퀴즈 목록](docs/screenshots/list.png)
