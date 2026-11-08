@@ -127,44 +127,6 @@ except ValueError:
 
 입력 함수는 "게임을 끝낼 권한"이 없습니다. 그래서 **`None`이라는 신호**만 돌려주고, 호출한 쪽(`QuizGame`)이 `self.running = False`로 게임을 끝냅니다. 입력 처리와 게임 진행의 **책임을 나눈 것**입니다.
 
-### 🔧 다듬을 점: `input_text`와의 중복
-
-`input_number`와 `input_text`의 앞부분(입력 받기 + `Ctrl+C`·EOF 처리 + 빈 입력 검사)이 **똑같습니다.** 안내 문구를 바꾸려면 두 곳을 고쳐야 합니다. 공통 부분을 함수로 빼면 짧아집니다.
-
-```python
-def read_line(prompt):
-    """한 줄을 읽는다. 강제 종료면 None, 빈 입력이면 ""를 돌려준다."""
-    try:
-        return input(prompt).strip()
-    except (KeyboardInterrupt, EOFError):          # 두 예외를 한 번에
-        print("\n입력이 중단되었습니다. 프로그램을 안전하게 종료합니다.")
-        return None
-
-
-def input_text(prompt):
-    while True:
-        value = read_line(prompt)
-        if value is None or value != "":
-            return value
-        print("입력이 비어 있습니다.")
-
-
-def input_number(prompt, low, high):
-    while True:
-        value = input_text(prompt)                 # 빈 입력 검사까지 재사용
-        if value is None:
-            return None
-        try:
-            number = int(value)
-        except ValueError:
-            print("숫자만 입력하세요.")
-            continue
-        if low <= number <= high:
-            return number
-        print(f"{low}에서 {high} 사이의 숫자를 입력하세요.")
-```
-
-`except (A, B):`처럼 **괄호로 묶으면 여러 예외를 한 번에** 잡을 수 있습니다. 두 경우의 안내 문구를 다르게 유지하고 싶다면 지금처럼 따로 두어도 괜찮습니다.
 
 ---
 
@@ -223,13 +185,6 @@ return user_answer == self.answer
 
 **`@classmethod`를 쓴 이유**: `from_dict`는 **아직 객체가 없을 때** 객체를 만드는 메서드라서 `self`가 아니라 클래스 자체(`cls`)를 받습니다. `Quiz.from_dict(item)`처럼 클래스 이름으로 호출합니다. "딕셔너리에서 만들기"라는 의도가 이름에 드러나는 것이 장점입니다.
 
-**더 짧게 쓰는 방법**: 딕셔너리 키가 매개변수 이름과 같으므로 `**`(딕셔너리 풀기)를 쓸 수 있습니다.
-
-```python
-return cls(**data)   # cls(question=..., choices=..., answer=...)와 같음
-```
-
-다만 JSON에 모르는 키가 하나라도 있으면 오류가 나므로, 지금처럼 키를 하나씩 꺼내는 쪽이 더 안전합니다.
 
 ---
 
@@ -409,15 +364,6 @@ percent = round(score / len(self.quizzes) * 100)
 
 처음부터 `0`으로 두면 "0점을 받았다"와 "아직 안 풀었다"를 구분할 수 없습니다. `None`으로 "값이 없음"을 표현하고, `is None`으로 검사합니다(`None` 비교는 `==`보다 `is`가 관례).
 
-### 🔧 다듬을 점: 비어 있는지 확인
-
-```python
-if len(self.quizzes) == 0:      # 현재
-if not self.quizzes:            # Python 관례 — 빈 리스트는 False로 취급
-```
-
-둘 다 맞지만 오른쪽이 더 짧고 Python 코드에서 흔히 쓰입니다.
-
 ---
 
 ## 10. 실행 루프 — `run`
@@ -438,22 +384,6 @@ def run(self):
 ### 10-2. `self.running` 깃발
 
 `break`는 **자기가 속한 반복문**만 빠져나올 수 있습니다. `play_quiz` 안에서 `Ctrl+C`가 눌리면 `run`의 `while`을 직접 멈출 방법이 없어서, 객체 속성 `self.running`을 `False`로 바꿔 "게임 종료"를 알립니다. 어느 메서드에서든 게임을 끝낼 수 있는 **공용 스위치**입니다.
-
-### 🔧 더 간단히: 메뉴 분기
-
-지금은 `if/elif`가 5개입니다. 메뉴가 늘어나면 **번호 → 메서드** 표(딕셔너리)로 바꿀 수 있습니다.
-
-```python
-actions = {1: self.play_quiz, 2: self.add_quiz, 3: self.show_quizzes, 4: self.show_best_score}
-
-if choice == 5:
-    print("프로그램을 종료합니다.")
-    self.running = False
-else:
-    actions[choice]()          # 괄호를 붙여야 실행됨
-```
-
-메서드 이름 뒤에 `()`를 붙이지 않으면 실행하지 않고 **메서드 자체를 값으로** 저장할 수 있습니다. 메뉴 5개 정도면 지금의 `if/elif`가 오히려 읽기 쉬우니, 보너스 기능(삭제 등)을 추가할 때 고려해 보세요.
 
 ---
 
