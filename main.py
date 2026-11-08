@@ -226,7 +226,7 @@ class QuizGame:
         if self.best_score is None:
             print("아직 퀴즈를 풀지 않았습니다.")
         else:
-            print(f"현재 최고 점수: {self.best_score}점")
+            print(f"현재 최고 점수: {self.best_score} 점")
 
     def run(self):
         try:
