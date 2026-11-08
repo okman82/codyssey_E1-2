@@ -54,7 +54,7 @@ class Quiz:
         self.answer = answer  # 1~4 번호로 저장
 
     def show(self):
-        print(f"\n문제: {self.question}")
+        print(self.question)
         for i, choice in enumerate(self.choices, start=1):
             print(f"{i}. {choice}")
 
@@ -163,8 +163,10 @@ class QuizGame:
             return
 
         score = 0
+        print(f"\n퀴즈를 시작합니다! (총 {len(self.quizzes)}문제)")
 
-        for quiz in self.quizzes:
+        for i, quiz in enumerate(self.quizzes, start=1):
+            print(f"\n[문제 {i}]")
             quiz.show()
             answer = input_number("정답 번호를 입력하세요: ", 1, 4)
 
