@@ -1,7 +1,14 @@
 def input_number(prompt, low, high):
     while True:
-        value = input(prompt).strip()
-
+        try:
+            value = input(prompt).strip()
+        except KeyboardInterrupt:
+            print("\n입력이 중단되었습니다. 프로그램을 안전하게 종료합니다.")
+            return None
+        except EOFError:
+            print("\n입력 스트림이 종료되었습니다. 프로그램을 안전하게 종료합니다.")
+            return None
+        
         if value == "":
             print("입력이 비어 있습니다.")
             continue
@@ -27,7 +34,7 @@ while True:
 
     choice = input_number("번호를 입력하세요: ", 1, len(menu))
 
-    if choice == 5:
+    if choice == 5 or choice is None:
         print("프로그램을 종료합니다.")
         break
 
