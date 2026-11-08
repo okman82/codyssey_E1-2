@@ -82,7 +82,7 @@ class QuizGame:
         self.quizzes = self.copy_quizzes(default_quizzes)
         
         self.best_score = None
-        self.menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "종료"]
+        self.menu = ["퀴즈 풀기", "퀴즈 추가", "퀴즈 목록", "점수 확인", "퀴즈 삭제", "종료"]
         self.running = True
         self.state_file = state_file
         self.load_state()
@@ -232,6 +232,27 @@ class QuizGame:
         else:
             print(f"현재 최고 점수: {self.best_score}점")
 
+
+    def delete_quiz(self):
+        if len(self.quizzes) == 0:
+            print("삭제할 퀴즈가 없습니다.")
+            return
+
+        self.show_quizzes()
+        count = len(self.quizzes)
+        number = input_number(f"삭제할 퀴즈 번호를 입력하세요 (취소: 0, 1~{count}): ", 0, count)
+        if number is None:
+            self.running = False
+            return
+        if number == 0:
+            print("삭제를 취소했습니다.")
+            return
+
+        removed = self.quizzes.pop(number - 1)
+        self.save_state()
+        print(f"[{removed.question}] 퀴즈를 삭제했습니다.")
+
+
     def run(self):
         try:
             while self.running:
@@ -251,6 +272,8 @@ class QuizGame:
                 elif choice == 4:
                     self.show_best_score()
                 elif choice == 5:
+                    self.delete_quiz()
+                elif choice == 6:
                     print("프로그램을 종료합니다.")
                     self.running = False
         finally:
