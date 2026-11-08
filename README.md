@@ -480,8 +480,8 @@ STATE_FILE = Path(__file__).parent / "state.json"
 
 ```text
 $ git remote -v
-![git log](docs/screenshots/git_log.png)
 ```
+![git log](docs/screenshots/git_log.png)
 
 ### 10-2. 커밋 규칙과 브랜치
 
